@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+   <head th:replace="snippets.html :: name_head"></head>
+
+  <body>
+        <!-- Navbar-->
+        <nav th:replace="snippets.html :: name_navbar"></nav>
+
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- sidebar -->
+               <div th:replace="snippets.html :: name_sidebar"></div>
+                <!-- center area -->
+                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                    <h3>REPORT GENERATION</h3><br>
+                    <div>
+                        <form class="order-date-form">
+                            <legend>ORDER REPORT</legend>
+                            <div class="columns">
+                                        <div class="item">
+                                            <label for="sdate">Starting Date </label><br>
+                                            <input id="sdate"  type="date" name="sdate"  onchange="sd()" required=""/>
+                                        </div>
+                                        <div class="item">
+                                            <label for="edate">Ending Date</label><br>
+                                            <input id="edate" type="date" name="edate" required="" disabled/>
+                                        </div>
+                                        <div class="item">
+                                            <label for="brand">Brand</label><br>
+                                            <input id="brand" type="text" name="brand" required=""/>
+                                        </div>
+                                        <div class="item">
+                                            <label for="category">Category</label><br>
+                                            <input id="category" type="text" name="category" required=""/>
+                                        </div>
+                                        <div class="item"><br>
+                                            <input type="button" class="btn btn-primary btn-lg" value="Generate Order Report" id="order-report">
+                                        </div>
+                                       
+                            </div>  <br>
+                            </form>
+                        </div>
+                    <div>
+                        <legend>BRAND REPORT</legend>
+                        <button type="button" class="btn btn-primary btn-lg" id="brand-report">Generate Brand Report</button>
+                    </div><br><br>
+                    <div>
+                        <legend>INVENTORY REPORT</legend>
+                        <button type="button" class="btn btn-primary btn-lg" id="inventory-report">Generate Inventory Report</button>
+                    </div>
+                </main>
+                
+            </div>  
+            
+        </div>
+       <div th:replace="snippets.html :: name_footer"></div>
+  </body>
+  	<script th:src="@{/static/report.js}"></script>
+  <script>
+     function sd(){
+         var minimum = document.getElementById("sdate").value
+         document.getElementById("edate").disabled = false;
+          document.getElementById("edate").setAttribute("min",minimum)
+      }
+  </script>
+  
+</html>

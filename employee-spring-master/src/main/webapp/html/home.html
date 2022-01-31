@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+ 
+ <head th:replace="snippets.html :: name_head"></head>
+ 
+  <body>
+        <!-- Navbar-->
+        <nav th:replace="snippets.html :: name_navbar"></nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- sidebar -->
+                <div th:replace="snippets.html :: name_sidebar"></div>
+            <!-- Main -->
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <h3>About</h3>
+                <hr>
+                <p>
+                  This is a point of sale application which helps in the insertion of brands into the system along with their products.
+                </p>
+                <p>
+                  Thus helping the user to do inventory management and order placing along with the generation of invoices and sales reports. 
+                </p>
+                <img class="pos-home-img" th:src="@{/static/pos.jpg}" alt="Image not loaded">
+            </main>
+            </div>  
+            
+        </div>
+        <div th:replace="snippets.html :: name_footer"></div>
+      
+  </body>
+</html>

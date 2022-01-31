@@ -1,0 +1,18 @@
+package com.increff.pos.model;
+
+import java.time.LocalDateTime;
+
+public class InfoData {
+
+	private String message;
+	
+	public InfoData() {
+		message = "Activity Time: " + LocalDateTime.now().toString();
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+}
