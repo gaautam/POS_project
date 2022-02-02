@@ -19,20 +19,20 @@ public class BrandPojo {
 	@Column(name = "Category",nullable = false)
 	private  String category;
 	
-	@OneToMany(mappedBy = "b")
-	private Set<ProductPojo> p;
+//	@OneToMany(mappedBy = "b")
+//	private Set<ProductPojo> p;
 	
 	public BrandPojo() {
 		super();
 	}
 	
-	public BrandPojo(int id,String brand,String category,Set<ProductPojo> p) {
-		super();
-		this.id = id;
-		this.brand = brand;
-		this.category = category;
-		this.p = p;
-	}
+//	public BrandPojo(int id,String brand,String category,Set<ProductPojo> p) {
+//		super();
+//		this.id = id;
+//		this.brand = brand;
+//		this.category = category;
+//		this.p = p;
+//	}
 	
 	public int getId() {
 		return id;
@@ -53,12 +53,12 @@ public class BrandPojo {
 		this.category = category;
 	}
 	
-	public Set<ProductPojo> getProductPojo(){
-		return p;
-	}
-	
-	public void setProductPojo(Set<ProductPojo> p) {
-		this.p = p;
-	}
+//	public Set<ProductPojo> getProductPojo(){
+//		return p;
+//	}
+//	
+//	public void setProductPojo(Set<ProductPojo> p) {
+//		this.p = p;
+//	}
 	
 }

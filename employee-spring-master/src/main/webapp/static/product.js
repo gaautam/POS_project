@@ -23,7 +23,66 @@ function getProductList(){
 	});
 }
 
-function checkBrandCategory(data,brand,category){
+function checkBrandCategory(data,brand,category,barcode){
+
+	var url = getProductUrl();
+	$.ajax({
+		url: url,
+		type: 'GET',
+		async:false,
+		success: function(data1) {	
+			for(var i in data1){
+				var e = data1[i];
+				if (barcode==e.barcode.toLowerCase().trim()){
+					alert("The barcode entered already exists in Inventory. Edit it if required.");
+					//sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
+					return false;
+					
+					
+				}
+			} 
+		},
+		error: function(){
+			sweetAlert("Data loading error", "An error has occurred in getting the inventory list", "error");
+		}
+	 });
+
+	for(var i in data){
+		var e = data[i];
+		if (brand.toLowerCase().trim()==e.brand && category.toLowerCase().trim()==e.category){
+			return true
+		}
+	} 
+	return false
+}
+
+function checkFileBrandCategory(data,brand,category,barcode){
+
+	var url = getProductUrl();
+	var flag=0;
+	$.ajax({
+		url: url,
+		type: 'GET',
+		async:false,
+		success: function(data1) {	
+			for(var i in data1){
+				var e = data1[i];
+				if (barcode==e.barcode.toLowerCase().trim()){
+					//sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
+					flag=1;
+					
+					
+				}
+			} 
+		},
+		error: function(){
+			sweetAlert("Data loading error", "An error has occurred in getting the inventory list", "error");
+		}
+	 });
+	 if(flag==1){
+		 return false;
+	 }
+
 	for(var i in data){
 		var e = data[i];
 		if (brand.toLowerCase().trim()==e.brand && category.toLowerCase().trim()==e.category){
@@ -126,7 +185,7 @@ function addProduct(event){
 					url: url2,
 					type: 'GET',
 					success: function(data) {
-						if(checkBrandCategory(data,brand,category)){
+						if(checkBrandCategory(data,brand,category,barcode)){
 								fetch(url, {
 									method: 'POST',
 									headers: {
@@ -248,6 +307,8 @@ function deleteProduct(id){
 }
 
 //File upload methods
+var errorProductData = []
+
 function readFileData(file, callback){
 	var config = {
 		header: true,
@@ -277,9 +338,45 @@ function readFileDataCallback(results){
 		sweetAlert("Rows Exceeded","Number of rows in the file Exceeded 5000","warning")
 		return false;
 	}
-	for(var i in fileData){
-		uploadRows(fileData[i]);
+	checkFile(fileData)
+	if(errorProductData.length==0){
+		for(var i in fileData){
+			uploadRows(fileData[i]);
+		}
 	}
+	else{
+		$('#file-error-product-modal').modal('toggle');
+	}
+}
+
+function checkFile(fileData){
+	var baseUrl = $("meta[name=baseUrl]").attr("content")
+	var url2 = baseUrl + "/api/brand";
+	for(var i in fileData){
+		var row = fileData[i];
+			$.ajax({
+				url: url2,
+				type: 'GET',
+				async: false,
+				success: function(data) {	
+					if(checkFileBrandCategory(data,row.brand,row.category,row.barcode)){
+						console.log(row+" this is a row")
+					}
+					else
+					{
+						errorProductData.push(row)
+					}
+				},
+				error: function(){
+					sweetAlert("Data Loading error", "An error has occurred in getting the Inventory list", "error");
+				}
+			 });
+	}
+}
+
+function downloadErrors(){
+	writeFileData(errorProductData);
+	$('#file-error-product-modal').modal('toggle');
 }
 
 function uploadRows(row){
@@ -292,7 +389,6 @@ function uploadRows(row){
 	   url: url2,
 	   type: 'GET',
 	   success: function(data) {	
-		   if(checkBrandCategory(data,brand,category)){
 					fetch(url, {
 						method: 'POST',
 						headers: {
@@ -311,11 +407,6 @@ function uploadRows(row){
 						var $file = $('#process-product-data');
 						$file.val('');
 					});
-		   }
-		   else
-		   {
-			sweetAlert("Input Data Error", "The entered Brand and Category combination does not exist in the database, please try again !", "error");
-		   }
 	   },
 	   error: function(){
 		sweetAlert("Data loading error", "An error has occurred in getting the Product list", "error");
@@ -391,6 +482,7 @@ function init(){
 	$('#update-product').click(updateProduct);
 	$('#refresh-product-data').click(getProductList);
 	$('#process-product-file').click(processData);
+	$('#download-product-errors').click(downloadErrors);
 }
 
 $(document).ready(init);

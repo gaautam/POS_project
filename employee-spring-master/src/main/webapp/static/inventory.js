@@ -5,7 +5,28 @@ function getInventoryUrl(){
 	return baseUrl + "/api/inventory";
 }
 
-function checkBarcode(data,barcode){
+function checkUpdatedBarcode(data,barcode,id){
+	var url = getInventoryUrl();
+	$.ajax({
+		url: url,
+		type: 'GET',
+		async:false,
+		success: function(data1) {	
+			for(var i in data1){
+				var e = data1[i];
+				if (barcode==e.barcode.toLowerCase().trim() && id!=e.id){
+					alert("The barcode entered already exists in Inventory. Edit it if required.");
+					return false;
+					//sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
+					
+				}
+			} 
+		},
+		error: function(){
+			sweetAlert("Data loading error", "An error has occurred in getting the inventory list", "error");
+		}
+	 });
+
 	for(var i in data){
 		var e = data[i];
 		if (barcode==e.barcode.toLowerCase().trim()){
@@ -13,6 +34,67 @@ function checkBarcode(data,barcode){
 		}
 	} 
 	return false
+}
+
+function checkBarcode(data,barcode){
+	var url = getInventoryUrl();
+	$.ajax({
+		url: url,
+		type: 'GET',
+		async:false,
+		success: function(data1) {	
+			for(var i in data1){
+				var e = data1[i];
+				if (barcode==e.barcode.toLowerCase().trim()){
+					alert("The barcode entered already exists in Inventory. Edit it if required.");
+					//sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
+					return false;
+				}
+			} 
+		},
+		error: function(){
+			sweetAlert("Data loading error", "An error has occurred in getting the inventory list", "error");
+		}
+	 });
+
+	for(var i in data){
+		var e = data[i];
+		if (barcode==e.barcode.toLowerCase().trim()){
+			return true
+		}
+	} 
+	return false
+}
+
+function checkFileBarcode(data,barcode){
+	var url = getInventoryUrl();
+	var flag = 0;
+	$.ajax({
+		url: url,
+		type: 'GET',
+		async:false,
+		success: function(data1) {	
+			for(var i in data1){
+				var e = data1[i];
+				if (barcode==e.barcode.toLowerCase().trim()){
+					flag=1;
+				}
+			} 
+		},
+		error: function(){
+			sweetAlert("Data loading error", "An error has occurred in getting the inventory list", "error");
+		}
+	 });
+
+	 if (flag==1){
+		 return false;
+	 }
+	for(var i in data){
+		var e = data[i];
+		if (barcode==e.barcode.toLowerCase().trim()){
+			return true
+		}
+	} 
 }
 
 function validate(){
@@ -35,7 +117,30 @@ function validate(){
 		return false;
 	}
 
-	addInventory()
+	addInventory();
+}
+
+function UpdateValidate(){
+	let x = document.forms["inventory-edit-form"]["barcode"].value;
+	if (x == "") {
+		sweetAlert("Missing parameter", "Barcode must be filled out", "warning");
+		return false;
+	}
+	else if(x.length>255){
+		sweetAlert("Constraint Exception", "Length of barcode exceeded permitted length", "warning");
+	}
+
+	let y = document.forms["inventory-edit-form"]["quantity"].value;
+	if (y == "") {
+		sweetAlert("Missing Parameter", "Quantity must be filled out", "warning");
+		return false;
+	}
+	else if (y <= 0) {
+		sweetAlert("Constraint Exception", "Quantity must be greater than or equal to 1 unit", "warning");
+		return false;
+	}
+
+	updateInventory();
 }
 
 
@@ -74,8 +179,8 @@ function addInventory(event){
 			}
 			else
 			{
-				//alert("The entered Barcode does not exist in the database, please try again !")
-				sweetAlert("Input Data Error", "The entered Barcode does not exist in the database, please try again !", "error");
+				alert("The entered Barcode does not exist in the database, please try again !")
+				//sweetAlert("Input Data Error", "The entered Barcode does not exist in the database, please try again !", "error");
 			}
 		},
 		error: function(){
@@ -111,7 +216,7 @@ function updateInventory(event){
 		url: url2,
 		type: 'GET',
 		success: function(data) {	
-			if(checkBarcode(data,barcode)){
+			if(checkUpdatedBarcode(data,barcode,id)){
 				 fetch(url, {
 					method: 'PUT',
 					headers: {
@@ -178,6 +283,8 @@ function deleteInventory(id){
 }
 
 //File upload methods
+var errorInventoryData = []
+
 function readFileData(file, callback){
 	var config = {
 		header: true,
@@ -206,9 +313,45 @@ function readFileDataCallback(results){
 		sweetAlert("Rows Exceeded","Number of rows in the file Exceeded 5000","warning")
 		return false;
 	}
-	for(var i in fileData){
-		uploadRows(fileData[i]);
+	checkFile(fileData)
+	if(errorInventoryData.length==0){
+		for(var i in fileData){
+			uploadRows(fileData[i]);
+		}
 	}
+	else{
+		$('#file-error-inventory-modal').modal('toggle');
+	}
+}
+
+function checkFile(fileData){
+	var baseUrl = $("meta[name=baseUrl]").attr("content")
+	var url2 = baseUrl + "/api/product";
+	for(var i in fileData){
+		var row = fileData[i];
+			$.ajax({
+				url: url2,
+				type: 'GET',
+				async: false,
+				success: function(data) {	
+					if(checkFileBarcode(data,row.barcode)){
+						console.log(row+" this is a row")
+					}
+					else
+					{
+						errorInventoryData.push(row)
+					}
+				},
+				error: function(){
+					sweetAlert("Data Loading error", "An error has occurred in getting the Inventory list", "error");
+				}
+			 });
+	}
+}
+
+function downloadErrors(){
+	writeFileData(errorInventoryData);
+	$('#file-error-inventory-modal').modal('toggle');
 }
 
 function uploadRows(row){
@@ -223,7 +366,6 @@ function uploadRows(row){
 		url: url2,
 		type: 'GET',
 		success: function(data) {	
-			if(checkBarcode(data,barcode)){
 				 fetch(url, {
 					method: 'POST',
 					headers: {
@@ -242,11 +384,6 @@ function uploadRows(row){
 					var $file = $('#process-inventory-data');
 					$file.val('');
 				  });
-			}
-			else
-			{
-				sweetAlert("Input Data Error", "The entered Barcode does not exist in the database, please try again !", "error");
-			}
 		},
 		error: function(){
 			sweetAlert("Data loading error", "An error has occurred in getting the inventory list", "error");
@@ -316,9 +453,10 @@ function displayInventory(data){
 function init(){
 	console.log("Initialising")
 	$('#add-inventory').click(validate);
-	$('#update-inventory').click(updateInventory);
+	$('#update-inventory').click(UpdateValidate);
 	$('#refresh-inventory-data').click(getInventoryList);
 	$('#process-inventory-file').click(processData);
+	$('#download-inventory-errors').click(downloadErrors);
 }
 
 $(document).ready(init);

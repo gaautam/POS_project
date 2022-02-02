@@ -86,6 +86,8 @@ public class ProductService {
 	public static void normalize(ProductPojo p) {
 		p.setBarcode(p.getBarcode().toLowerCase().trim());
 		p.setName(p.getName().toLowerCase().trim());
+		p.setBrand(p.getBrand().toLowerCase().trim());
+		p.setCategory(p.getCategory().toLowerCase().trim());
 	}
 	
 	@Transactional

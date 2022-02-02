@@ -26,9 +26,9 @@ public class ProductPojo {
 	@Column(name = "MRP")
 	private double mrp;
 	
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="Brand_Category2",referencedColumnName = "Brand_ID")
-	private BrandPojo b;
+//	@ManyToOne(cascade=CascadeType.ALL)
+//	@JoinColumn(name="Brand_Category2",referencedColumnName = "Brand_ID")
+//	private BrandPojo b;
 	
 	public ProductPojo() {
 		super();
@@ -76,12 +76,12 @@ public class ProductPojo {
 		this.mrp = mrp;
 	}
 	
-	public BrandPojo getBrandPojo() {
-		return b;
-	}
-	
-	public void setBrandPojo(BrandPojo b) {
-		this.b = b;
-	}
+//	public BrandPojo getBrandPojo() {
+//		return b;
+//	}
+//	
+//	public void setBrandPojo(BrandPojo b) {
+//		this.b = b;
+//	}
 	
 }

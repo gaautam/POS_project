@@ -181,6 +181,8 @@ function deleteBrand(id){
 
 //File upload methods
 
+var errorBrandData = [];
+
 function readFileData(file, callback){
 	var config = {
 		header: true,
@@ -209,9 +211,46 @@ function readFileDataCallback(results){
 		sweetAlert("Rows Exceeded","Number of rows in the file Exceeded 5000","warning")
 		return false;
 	}
-	for(var i in fileData){
-		uploadRows(fileData[i]);
+	checkFile(fileData)
+	if(errorBrandData.length==0){
+		for(var i in fileData){
+			uploadRows(fileData[i]);
+		}
 	}
+	else{
+		$('#file-error-brand-modal').modal('toggle');
+	}
+}
+
+function checkFile(fileData){
+	var baseUrl = $("meta[name=baseUrl]").attr("content")
+	var url2 = baseUrl + "/api/brand";
+	for(var i in fileData){
+		var row = fileData[i];
+			$.ajax({
+				url: url2,
+				type: 'GET',
+				async: false,
+				success: function(data) {	
+					console.log(errorBrandData);
+					if(checkUnique(data,row.brand,row.category)){
+						console.log(fileData[i]+" this is a row")
+					}
+					else
+					{
+						errorBrandData.push(row)
+					}
+				},
+				error: function(){
+					sweetAlert("Data Loading error", "An error has occurred in getting the Brand list", "error");
+				}
+			 });
+	}
+}
+
+function downloadErrors(){
+	writeFileData(errorBrandData);
+	$('#file-error-brand-modal').modal('toggle');
 }
 
 function uploadRows(row){
@@ -228,7 +267,6 @@ function uploadRows(row){
 		type: 'GET',
 		success: function(data) {	
 			console.log(data);
-			if(checkUnique(data,brand,category)){
 				fetch(url, {
 					method: 'POST',
 					headers: {
@@ -248,11 +286,6 @@ function uploadRows(row){
 					var $file = $('#process-brand-data');
 					$file.val('');
 				  });
-			}
-			else
-			{
-				sweetAlert("Unique constraints exception", "Brand and Category combination already Exists. Please try again", "error");
-			}
 		},
 		error: function(){
 			sweetAlert("Data Loading error", "An error has occurred in getting the Brand list", "error");
@@ -265,10 +298,6 @@ function uploadRows(row){
 }
 
 //UI DISPLAY METHODS
-function displayingRows(data){
-
-}
-
 
 function displayBrandList(data){
 	console.log('Printing Brand data');
@@ -338,6 +367,7 @@ function init(){
 	$('#update-brand').click(updateBrand);
 	$('#refresh-brand-data').click(getBrandList);
 	$('#process-brand-file').click(processData);
+	$('#download-brand-errors').click(downloadErrors);
 
 }
 
