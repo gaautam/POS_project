@@ -28,16 +28,22 @@ function orderReport(){
 		sweetAlert("Missing parameter", "Ending date must be filled out", "warning");
 		return false;
 	}
-        else if(brand=="undefined-undefined-"){
-                sweetAlert("Missing parameter", "Brand must be filled out", "warning");
+        if(brand=="undefined-undefined-" && category=="undefined-undefined-"){
+                withoutBrandCategory(sdate,edate)
+        }
+        else if((brand != "undefined-undefined-" && category == "undefined-undefined-")||(brand == "undefined-undefined-" && category != "undefined-undefined-")){
+                sweetAlert("Missing parameter", "Both brand and category must be filled out", "warning");
 		return false;
         }
-        else if(category=="undefined-undefined-"){
-                sweetAlert("Missing parameter", "Category must be filled out", "warning");
-		return false;
+        if(sdate != "undefined-undefined-" && edate != "undefined-undefined-" && brand != "undefined-undefined-" && category != "undefined-undefined-"){
+                withBrandCategory(sdate,edate,brand,category)
         }
 
-    var url = getReportUrl() + "/api/order/report/"+sdate+"/"+edate+"/"+brand+"/"+category;
+   
+}
+
+function withBrandCategory(sdate,edate,brand,category){
+        var url = getReportUrl() + "/api/order/report/"+sdate+"/"+edate+"/"+brand+"/"+category;
 	$.ajax({
 	   url: url,
 	   type: 'GET',
@@ -59,6 +65,33 @@ function orderReport(){
 	   },
 	   error: function(){
                 sweetAlert("Data Loading Error", "An error has occurred in getting order report", "error");
+	   }
+	});
+}
+
+function withoutBrandCategory(sdate,edate){
+        var url = getReportUrl() + "/api/order/report/"+sdate+"/"+edate;
+	$.ajax({
+	   url: url,
+	   type: 'GET',
+	   success: function(data) {
+	   		console.log("Order report data fetched");
+	   		console.log(data);  
+               $.ajax({
+                url: getReportUrl() + "/api/order/report/consolidated_orderurl",
+                type: 'GET',
+                success: function(download) {
+                        console.log("Order report url fetched");
+                        console.log(download);
+                        window.open(download,'_blank');
+                },
+                error: function(){
+                        sweetAlert("URL Loading Error", "An error has occurred in getting consolidated order url", "error");
+                }
+             });	 	
+	   },
+	   error: function(){
+                sweetAlert("Data Loading Error", "An error has occurred in getting consolidated order report", "error");
 	   }
 	});
 }

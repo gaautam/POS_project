@@ -5,6 +5,8 @@ import java.util.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -49,14 +51,30 @@ public class ReportService {
 	      table.addCell(cell);
 	      cell.setPhrase(new Phrase("Category", font));
 	      table.addCell(cell);
+	      Paragraph p = new Paragraph(" ",font);
+	      p.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph title = new Paragraph("Consolidated Brand Report",font);
+	      title.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph creation = new Paragraph("Report generated on:",font);
+	      creation.setAlignment(Paragraph.ALIGN_BOTTOM);
+	      
+	      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	      LocalDateTime now = LocalDateTime.now();
+	      Paragraph timestamp = new Paragraph(dtf.format(now),font);
+	      timestamp.setAlignment(Paragraph.ALIGN_BOTTOM);
 	      // adding table rows
 	      for(BrandData bd : list) {
 	        table.addCell(bd.getBrand());
 	        table.addCell(bd.getCategory());  
 	      }
 	      doc.open();
+	      doc.add(title);
+	      doc.add(p);
 	      // adding table to document
 	      doc.add(table);
+	      doc.add(p);
+	      doc.add(creation);
+	      doc.add(timestamp);
 	      doc.close();
 	      writer.close();
 	      System.out.println("Brand report created successfully");
@@ -89,6 +107,17 @@ public class ReportService {
 	      table.addCell(cell);
 	      cell.setPhrase(new Phrase("Quantity", font));
 	      table.addCell(cell);
+	      Paragraph p = new Paragraph(" ",font);
+	      p.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph title = new Paragraph("Consolidated Inventory Report",font);
+	      title.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph creation = new Paragraph("Report generated on:",font);
+	      creation.setAlignment(Paragraph.ALIGN_BOTTOM);
+	      
+	      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	      LocalDateTime now = LocalDateTime.now();
+	      Paragraph timestamp = new Paragraph(dtf.format(now),font);
+	      timestamp.setAlignment(Paragraph.ALIGN_BOTTOM);
 	      // adding table rows
 	      for(InventoryData bd : list) {
 	        table.addCell(bd.getBarcode());
@@ -96,7 +125,12 @@ public class ReportService {
 	      }
 	      doc.open();
 	      // adding table to document
+	      doc.add(title);
+	      doc.add(p);
 	      doc.add(table);
+	      doc.add(p);
+	      doc.add(creation);
+	      doc.add(timestamp);
 	      doc.close();
 	      writer.close();
 	      System.out.println("Inventory report created successfully");
@@ -137,6 +171,17 @@ public class ReportService {
 	      category = category.replace("undefined-undefined-", "");
 	      int final_quantity = 0;
 	      double total_revenue = 0;
+	      Paragraph p = new Paragraph(" ",font);
+	      p.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph title = new Paragraph("Consolidated Sales Report",font);
+	      title.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph creation = new Paragraph("Report generated on:",font);
+	      creation.setAlignment(Paragraph.ALIGN_BOTTOM);
+	      
+	      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	      LocalDateTime now = LocalDateTime.now();
+	      Paragraph timestamp = new Paragraph(dtf.format(now),font);
+	      timestamp.setAlignment(Paragraph.ALIGN_BOTTOM);
 	      for(ReportForm bd : list) {
 	    	if(bd.getBrand().equals(brand) && bd.getCategory().equals(category)) {
 	         final_quantity = final_quantity+bd.getQuantity();
@@ -149,7 +194,12 @@ public class ReportService {
 	      table.addCell(String.valueOf(total_revenue)); 
 	      doc.open();
 	      // adding table to document
+	      doc.add(title);
+	      doc.add(p);
 	      doc.add(table);
+	      doc.add(p);
+	      doc.add(creation);
+	      doc.add(timestamp);
 	      doc.close();
 	      writer.close();
 	      System.out.println("Order report created successfully");
@@ -187,6 +237,14 @@ public class ReportService {
 	      Paragraph p = new Paragraph(" ",font);
 	      p.setAlignment(Paragraph.ALIGN_CENTER);
 	      Paragraph title = new Paragraph("INVOICE PDF",font);
+	      title.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph creation = new Paragraph("Invoice generated on:",font);
+	      creation.setAlignment(Paragraph.ALIGN_BOTTOM);
+	      
+	      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	      LocalDateTime now = LocalDateTime.now();
+	      Paragraph timestamp = new Paragraph(dtf.format(now),font);
+	      timestamp.setAlignment(Paragraph.ALIGN_BOTTOM);
 	      
 	      PdfPTable table = new PdfPTable(3);
 	      table.setWidthPercentage(100);
@@ -216,9 +274,69 @@ public class ReportService {
 	      doc.add(table);
 	      doc.add(p);
 	      doc.add(total);
+	      doc.add(creation);
+	      doc.add(timestamp);
 	      doc.close();
 	      writer.close();
 	      System.out.println("Order items report created successfully");
+	    } catch (DocumentException | FileNotFoundException e) {
+	      // TODO Auto-generated catch block
+	      e.printStackTrace();
+	    }
+	  }
+
+	public void AllOrderReport(List<OrderItemData> list) {
+		new ReportService().createTableConsolidatedOrder("E:\\Increff Tutorials\\pos-spring-master\\employee-spring-master\\src\\main\\webapp\\resources\\Consolidated_Order_Report.pdf",list);
+		
+	}
+	private void createTableConsolidatedOrder(String PDFPath, List<OrderItemData> list){
+	    try {
+	      File f= new File(PDFPath); 
+		  f.delete();
+	      Font font = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
+	      Document doc = new Document();
+	      PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(PDFPath));
+	      PdfPTable table = new PdfPTable(3);
+	      table.setWidthPercentage(100);
+	      // setting column widths
+	      table.setWidths(new float[] {8.0f, 8.0f, 8.0f});
+	      PdfPCell cell = new PdfPCell();
+	      // table headers
+	      cell.setPhrase(new Phrase("Barcode", font));
+	      table.addCell(cell);
+	      cell.setPhrase(new Phrase("Quantity", font));
+	      table.addCell(cell);
+	      cell.setPhrase(new Phrase("Selling Price", font));
+	      table.addCell(cell);
+	      
+	      // adding table rows
+	      Paragraph p = new Paragraph(" ",font);
+	      p.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph title = new Paragraph("Consolidated Sales Report",font);
+	      title.setAlignment(Paragraph.ALIGN_CENTER);
+	      Paragraph creation = new Paragraph("Report generated on:",font);
+	      creation.setAlignment(Paragraph.ALIGN_BOTTOM);
+	      
+	      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	      LocalDateTime now = LocalDateTime.now();
+	      Paragraph timestamp = new Paragraph(dtf.format(now),font);
+	      timestamp.setAlignment(Paragraph.ALIGN_BOTTOM);
+	      for(OrderItemData bd : list) {
+	    	  table.addCell(bd.getBarcode());
+		      table.addCell(String.valueOf(bd.getQuantity()));
+		      table.addCell(String.valueOf(bd.getSelling_price()));
+	    	}
+	      doc.open();
+	      // adding table to document
+	      doc.add(title);
+	      doc.add(p);
+	      doc.add(table);
+	      doc.add(p);
+	      doc.add(creation);
+	      doc.add(timestamp);
+	      doc.close();
+	      writer.close();
+	      System.out.println("Order report created successfully");
 	    } catch (DocumentException | FileNotFoundException e) {
 	      // TODO Auto-generated catch block
 	      e.printStackTrace();

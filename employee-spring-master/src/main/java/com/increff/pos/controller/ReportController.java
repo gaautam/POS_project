@@ -78,7 +78,7 @@ public class ReportController {
 		return list2;
 	}
 	
-	@ApiOperation(value = "Generates a report of all Orders within a particular duration")
+	@ApiOperation(value = "Generates a report of all Orders within a particular duration with brand and category filters")
 	@RequestMapping(path = "/api/order/report/{sdate}/{edate}/{brand}/{category}", method = RequestMethod.GET)
 	public List<ReportForm> getAllOrders(@PathVariable String sdate,@PathVariable String edate,@PathVariable String brand,@PathVariable String category) throws ApiException {
 		List<OrderPojo> list = oservice.getDurationOrders(sdate,edate);
@@ -92,6 +92,22 @@ public class ReportController {
 			}
 		}
 		rservice.OrderReport(list2,brand,category);
+		return list2;
+	}
+	
+	@ApiOperation(value = "Generates a report of all Orders within a particular duration")
+	@RequestMapping(path = "/api/order/report/{sdate}/{edate}", method = RequestMethod.GET)
+	public List<OrderItemData> getAllOrderswithout(@PathVariable String sdate,@PathVariable String edate) throws ApiException {
+		List<OrderPojo> list = oservice.getDurationOrders(sdate,edate);
+		List<OrderItemData> list2 = new ArrayList<OrderItemData>();
+		for (OrderPojo p : list) {
+			int id = p.getId();
+			List<OrderItemsPojo> l = oiservice.getOrderItems(id);
+			for (OrderItemsPojo p2 : l) {
+				list2.add(convertOrderItems(p2));	
+			}
+		}
+		rservice.AllOrderReport(list2);
 		return list2;
 	}
 
@@ -130,10 +146,17 @@ public class ReportController {
 		return url;
 	}
 	
-	@ApiOperation(value = "Downloads report of all orders in the given duration")
+	@ApiOperation(value = "Downloads report of all orders in the given duration with brand and category")
 	@RequestMapping(path = "/api/order/report/orderurl", method = RequestMethod.GET)
 	public String downloadOrderUrl(){
 		String url = "http://localhost:9000/employee/resources/Order_Report.pdf";
+		return url;
+	}
+	
+	@ApiOperation(value = "Downloads report of all orders in the given duration")
+	@RequestMapping(path = "/api/order/report/consolidated_orderurl", method = RequestMethod.GET)
+	public String downloadConsolidatedOrderUrl(){
+		String url = "http://localhost:9000/employee/resources/Consolidated_Order_Report.pdf";
 		return url;
 	}
 	
