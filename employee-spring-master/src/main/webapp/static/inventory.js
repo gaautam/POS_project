@@ -66,9 +66,11 @@ function checkBarcode(data,barcode){
 	return false
 }
 
+var flag = 0;
+
 function checkFileBarcode(data,barcode){
 	var url = getInventoryUrl();
-	var flag = 0;
+	flag = 0;
 	$.ajax({
 		url: url,
 		type: 'GET',
@@ -339,6 +341,12 @@ function checkFile(fileData){
 					}
 					else
 					{
+						if(flag==1){
+						row.Error_Message = "The entered Barcode already exists in the inventory. Edit it if required!";
+						}
+						else{
+							row.Error_Message = "The entered Barcode does not exist in the product database, please try again !";
+						}
 						errorInventoryData.push(row)
 					}
 				},
@@ -351,7 +359,10 @@ function checkFile(fileData){
 
 function downloadErrors(){
 	writeFileData(errorInventoryData);
+	var $file = $('#process-inventory-data');
+	$file.val('');
 	$('#file-error-inventory-modal').modal('toggle');
+	errorInventoryData = [];
 }
 
 function uploadRows(row){

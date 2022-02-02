@@ -238,6 +238,7 @@ function checkFile(fileData){
 					}
 					else
 					{
+						row.Error_Message = "Brand and Category combination already Exists."
 						errorBrandData.push(row)
 					}
 				},
@@ -250,7 +251,10 @@ function checkFile(fileData){
 
 function downloadErrors(){
 	writeFileData(errorBrandData);
+	var $file = $('#process-brand-data');
+	$file.val('');
 	$('#file-error-brand-modal').modal('toggle');
+	errorBrandData = [];
 }
 
 function uploadRows(row){
@@ -325,7 +329,7 @@ function createTable(){
 		info:false,
 		bDestroy: true,
 		pageLength : 5,
-		lengthMenu: [[5, 10, 20], [5, 10, 20]]
+		lengthMenu: [[5, 10, 20], [5, 10, 20]],
 	});
 	
 }

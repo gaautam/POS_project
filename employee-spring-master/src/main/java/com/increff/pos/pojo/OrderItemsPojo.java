@@ -3,6 +3,7 @@ package com.increff.pos.pojo;
 import javax.persistence.*;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "order_id", "barcode" }) })
 public class OrderItemsPojo {
 
 	  	@Id

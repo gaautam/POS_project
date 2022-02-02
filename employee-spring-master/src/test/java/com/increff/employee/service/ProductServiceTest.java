@@ -21,7 +21,9 @@ public class ProductServiceTest extends AbstractUnitTest {
 	public void testAdd() throws ApiException {
 		ProductPojo p = new ProductPojo();
 		p.setBarcode(" 12345");
-		p.setName(" Shirt ");
+		p.setBrand("Nike");
+		p.setCategory("shorts");
+		p.setName(" Shorts1 ");
 		service.add(p);
 	}
 	
@@ -29,9 +31,13 @@ public class ProductServiceTest extends AbstractUnitTest {
 	public void testNormalize() {
 		ProductPojo p = new ProductPojo();
 		p.setBarcode(" 12345 ");
-		p.setName(" Shirt ");
+		p.setBrand("Nike");
+		p.setCategory("shorts");
+		p.setName(" Shorts1 ");
 		ProductService.normalize(p);
 		assertEquals("12345",p.getBarcode());
-		assertEquals("shirt",p.getName());
+		assertEquals("nike",p.getBrand());
+		assertEquals("shorts",p.getCategory());
+		assertEquals("shorts1",p.getName());
 	}
 }

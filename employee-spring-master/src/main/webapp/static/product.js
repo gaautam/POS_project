@@ -56,10 +56,12 @@ function checkBrandCategory(data,brand,category,barcode){
 	return false
 }
 
+var flag=0;
+
 function checkFileBrandCategory(data,brand,category,barcode){
 
 	var url = getProductUrl();
-	var flag=0;
+	flag=0;
 	$.ajax({
 		url: url,
 		type: 'GET',
@@ -163,7 +165,51 @@ function validate(){
 		return false;
 	}
 
-	addProduct()
+	addProduct();
+}
+
+function validateUpdate(){
+	let x = document.forms["product-edit-form"]["barcode"].value;
+	if (x == "") {
+		sweetAlert("Missing Parameter", "Barcode must be filled out", "warning");
+		return false;
+	}
+	else if(x.length>255){
+		sweetAlert("Constraint Exception", "Length of barcode exceeded permitted length", "warning");
+	}
+
+	let y = document.forms["product-edit-form"]["brand"].value;
+	if (y == "") {
+		sweetAlert("Missing Parameter", "Brand must be filled out", "warning");
+		return false;
+	}
+
+	let b = document.forms["product-edit-form"]["category"].value;
+	if (b == "") {
+		sweetAlert("Missing Parameter", "Category must be filled out", "warning");
+		return false;
+	}
+
+	let z = document.forms["product-edit-form"]["name"].value;
+	if (z == "") {
+		sweetAlert("Missing Parameter", "Name must be filled out", "warning");
+		return false;
+	}
+	else if(z.length>255){
+		sweetAlert("Constraint Exception", "Length of name exceeded permitted length", "warning");
+	}
+
+	let a = document.forms["product-edit-form"]["mrp"].value;
+	if (a == "") {
+		sweetAlert("Missing Parameter", "MRP must be filled out", "warning");
+		return false;
+	}
+	else if (a < 0) {
+		sweetAlert("Constraint Exception", "MRP cannot be negative", "warning");
+		return false;
+	}
+
+	updateProduct();
 }
 
 function addProduct(event){
@@ -364,6 +410,12 @@ function checkFile(fileData){
 					}
 					else
 					{
+						if(flag==1){
+						row.Error_Message = "The barcode entered already exists in Inventory. Edit it if required.";
+						}
+						else{
+							row.Error_Message = "The entered Brand and Category combination does not exist in the database !";
+						}
 						errorProductData.push(row)
 					}
 				},
@@ -376,7 +428,10 @@ function checkFile(fileData){
 
 function downloadErrors(){
 	writeFileData(errorProductData);
+	var $file = $('#process-product-data');
+	$file.val('');
 	$('#file-error-product-modal').modal('toggle');
+	errorProductData = [];
 }
 
 function uploadRows(row){
@@ -479,7 +534,7 @@ function displayProduct(data){
 function init(){
 	console.log("Initialising")
 	$('#add-product').click(validate);
-	$('#update-product').click(updateProduct);
+	$('#update-product').click(validateUpdate);
 	$('#refresh-product-data').click(getProductList);
 	$('#process-product-file').click(processData);
 	$('#download-product-errors').click(downloadErrors);
