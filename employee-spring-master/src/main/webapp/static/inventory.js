@@ -336,7 +336,15 @@ function checkFile(fileData){
 				type: 'GET',
 				async: false,
 				success: function(data) {	
-					if(checkFileBarcode(data,row.barcode)){
+					if(typeof row.barcode === 'undefined' || typeof row.quantity === 'undefined' || row.barcode==="" || row.quantity==""){
+						row.Error_Message = "Barcode or Quantity value missing in the file"
+						errorInventoryData.push(row)
+					}
+					else if(+row.quantity <= +0){
+						row.Error_Message = "Quantity value cannot be zero or negative"
+						errorInventoryData.push(row);
+					}
+					else if(checkFileBarcode(data,row.barcode)){
 						console.log(row+" this is a row")
 					}
 					else

@@ -405,7 +405,15 @@ function checkFile(fileData){
 				type: 'GET',
 				async: false,
 				success: function(data) {	
-					if(checkFileBrandCategory(data,row.brand,row.category,row.barcode)){
+					if(typeof row.barcode === 'undefined' || typeof row.brand === 'undefined' || typeof row.category === 'undefined' || typeof row.name === 'undefined' || typeof row.mrp === 'undefined' || row.barcode==="" || row.brand==="" ||row.category==="" || row.name==="" || row.mrp==""){
+						row.Error_Message = "Value missing in the file row"
+						errorProductData.push(row)
+					}
+					else if(+row.mrp < +0){
+						row.Error_Message = "MRP value cannot be negative"
+						errorProductData.push(row)
+					}
+					else if(checkFileBrandCategory(data,row.brand,row.category,row.barcode)){
 						console.log(row+" this is a row")
 					}
 					else

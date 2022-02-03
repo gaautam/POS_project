@@ -38,6 +38,39 @@ function validate(){
 	AddItemToDB()
 }
 
+function validateUpdate(){
+	let x = document.forms["order-edit-form"]["barcode"].value;
+	if (x == "") {
+		sweetAlert("Missing parameter", "Barcode must be filled out", "warning");
+		return false;
+	}
+	else if(x.length>255){
+		sweetAlert("Constraint Exception", "Length of barcode exceeded permitted length", "warning");
+	}
+
+	let y = document.forms["order-edit-form"]["quantity"].value;
+	if (y == "") {
+		sweetAlert("Missing Parameter", "Quantity must be filled out", "warning");
+		return false;
+	}
+	else if (y <= 0) {
+		sweetAlert("Constraint Exception", "Quantity must be greater than or equal to 1 unit", "warning");
+		return false;
+	}
+
+	let z = document.forms["order-edit-form"]["selling_price"].value;
+	if (z == "") {
+		sweetAlert("Missing Parameter", "Quantity must be filled out", "warning");
+		return false;
+	}
+	else if (z < 0) {
+		sweetAlert("Constraint Exception", "Selling price cannot be negative", "warning");
+		return false;
+	}
+
+	updateOrderItem()
+}
+
 
 //function to check valid barcode and quantity
 function checkOrder(data,barcode,quantity){
@@ -55,6 +88,36 @@ function checkOrder(data,barcode,quantity){
 	} 
 	return false
 }
+
+// var flag=0;
+
+// function checkOrderID(data,barcode,quantity,id){
+// 	flag=0;
+// 	var baseUrl = $("meta[name=baseUrl]").attr("content")
+// 	var url = baseUrl +"/api/order_item_by_order_id/" + id;
+// 	$.ajax({
+// 		url: url,
+// 		type: 'GET',
+// 		async:false,
+// 		success: function(data1) {
+// 				for(var i in data1){
+// 					var e = data1[i]
+// 					if(e.barcode==barcode && e.orderId==id){
+// 						flag=1;
+// 						alert("The barcode already exists in this order! Edit it if required.")
+// 					}
+// 					else if(e.barcode==barcode && e.quantity<quantity){
+// 						flag=1;
+// 						alert("The quantity exceed amount in inventory")
+// 					}
+// 				}
+// 		},
+// 		error: function(){
+// 				sweetAlert("Invoice Printing error", "An error has occurred in getting order items invoice", "error");
+// 		}
+// 	 });
+// 	return false
+// }
 
 function deleteOrderItem(id,barcode,quantity){
 	var url2 = getOrderUrl() + "item/" + id + "/" + barcode
@@ -204,25 +267,15 @@ function updateOrderItem(){
 			success: function(data) {	
 					if(checkOrder(data,barcode,quantity)){
 					reduceInventory(barcode,quantity,data);
+					increaseInventory(oldbarcode,oldquantity,data);
 					}
 			},
 			error: function(){
 				sweetAlert("Data loading error", "An error has occurred in getting the order list", "error");
 			}
 		});
-		$.ajax({
-			url: url2,
-			type: 'GET',
-			success: function(data) {	
-					increaseInventory(oldbarcode,oldquantity,data);
-			},
-			error: function(){
-				sweetAlert("Data loading error", "An error has occurred in getting the order list", "error");
-			}
-		});
-
 	}
-		
+	
 	var url = getOrderUrl() +"item"+ "/" + order_item_id + "/";
 	$form={"barcode":barcode,"order_id":id,"quantity":quantity,"selling_price":selling_price}
 
@@ -235,12 +288,11 @@ function updateOrderItem(){
 	  })
 	  .then(Response => {
 		console.log('Success:', Response);
-		changeInventory(quantity)
+		sweetAlert("Order Item Updated Successfully","","success")
 	  })
 	  .catch((error) => {
 		console.error('Error:', error);
 	  });
-	  sweetAlert("Order Item Updated Successfully","","success")
 }
 
 function AddItem(event){
@@ -616,7 +668,7 @@ function init(){
 	console.log("Initialising")
 	$('#refresh-order-data').click(getOrderList);
 	$('#add-order').click(addSubmitOrder);
-	$('#update-order-item').click(updateOrderItem);
+	$('#update-order-item').click(validateUpdate);
 	$('#add-order-item').click(validate);
 	
 }

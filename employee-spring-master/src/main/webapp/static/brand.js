@@ -233,7 +233,11 @@ function checkFile(fileData){
 				async: false,
 				success: function(data) {	
 					console.log(errorBrandData);
-					if(checkUnique(data,row.brand,row.category)){
+					if(typeof row.brand === 'undefined' || typeof row.category === 'undefined' || row.brand==="" || row.category===""){
+						row.Error_Message = "Brand or Category value missing in the file"
+						errorBrandData.push(row)
+					}
+					else if(checkUnique(data,row.brand,row.category)){
 						console.log(fileData[i]+" this is a row")
 					}
 					else
