@@ -15,9 +15,9 @@ function checkUpdatedBarcode(data,barcode,id){
 			for(var i in data1){
 				var e = data1[i];
 				if (barcode==e.barcode.toLowerCase().trim() && id!=e.id){
-					alert("The barcode entered already exists in Inventory. Edit it if required.");
+					//alert("The barcode entered already exists in Inventory. Edit it if required.");
+					sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
 					return false;
-					//sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
 					
 				}
 			} 
@@ -46,8 +46,8 @@ function checkBarcode(data,barcode){
 			for(var i in data1){
 				var e = data1[i];
 				if (barcode==e.barcode.toLowerCase().trim()){
-					alert("The barcode entered already exists in Inventory. Edit it if required.");
-					//sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
+					//alert("The barcode entered already exists in Inventory. Edit it if required.");
+					sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
 					return false;
 				}
 			} 
@@ -181,8 +181,8 @@ function addInventory(event){
 			}
 			else
 			{
-				alert("The entered Barcode does not exist in the database, please try again !")
-				//sweetAlert("Input Data Error", "The entered Barcode does not exist in the database, please try again !", "error");
+				//alert("The entered Barcode does not exist in the database, please try again !")
+				sweetAlert("Input Data Error", "The entered Barcode does not exist in the database, please try again !", "error");
 			}
 		},
 		error: function(){
@@ -315,11 +315,16 @@ function readFileDataCallback(results){
 		sweetAlert("Rows Exceeded","Number of rows in the file Exceeded 5000","warning")
 		return false;
 	}
+	else if(fileData.length==0){
+		sweetAlert("Input Data Error","The uploaded file seems to be empty or wrong with respect to the template provided. Please download the sample template and try again !!","warning")
+		return false;
+	}
 	checkFile(fileData)
 	if(errorInventoryData.length==0){
 		for(var i in fileData){
 			uploadRows(fileData[i]);
 		}
+		sweetAlert("Upload Successful","The contents of the file has been uploaded successfully","success")
 	}
 	else{
 		$('#file-error-inventory-modal').modal('toggle');

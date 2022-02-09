@@ -18,7 +18,7 @@ public class OrderDao{
 	private static String select_id  = "select p from OrderPojo p where id=:id";
 	private static String select_all = "select p from OrderPojo p";
 	private static String select_duration_orders = "select p from OrderPojo p where createDate>= :sdate and createDate<=:edate";
-	private static String select_same_duration = "select p from OrderPojo p where createDate>:sdate and createDate<=:edate";
+	//private static String select_same_duration = "select p from OrderPojo p where createDate>:sdate and createDate<=:edate";
 	
 	@PersistenceContext
 	EntityManager em;
@@ -54,17 +54,32 @@ public class OrderDao{
 		return em.createQuery(jpql,OrderPojo.class);
 	}
 
+//	public List<OrderPojo> selectDurationOrders(String sdate,String edate) {
+//		TypedQuery<OrderPojo> query = getQuery(select_duration_orders);
+//		System.out.println(select_duration_orders);
+//		System.out.println(select_same_duration);
+//		System.out.println(sdate);
+//		System.out.println(edate);
+//		if(sdate.equals(edate)) {
+//		TypedQuery<OrderPojo> query2 = getQuery(select_same_duration);
+//		query2.setParameter("sdate", sdate);
+//		String removal[] = sdate.split("-");
+//		
+//		String end = String.valueOf(Integer.parseInt(removal[0])+1)+"-"+removal[1]+"-"+removal[2] ;
+//		query2.setParameter("edate", end);
+//		return query2.getResultList();
+//		}
+//		query.setParameter("sdate", sdate);
+//		query.setParameter("edate", edate);
+//		return query.getResultList();
+//	}
+	
 	public List<OrderPojo> selectDurationOrders(String sdate,String edate) {
 		TypedQuery<OrderPojo> query = getQuery(select_duration_orders);
-		if(sdate.equals(edate)) {
-		TypedQuery<OrderPojo> query2 = getQuery(select_same_duration);
-		query2.setParameter("sdate", sdate);
-		String removal[] = sdate.split("-");
 		
-		String end = String.valueOf(Integer.parseInt(removal[0])+1)+"-"+removal[1]+"-"+removal[2] ;
-		query2.setParameter("edate", end);
-		return query2.getResultList();
-		}
+		sdate = sdate + " @ 00:00:00";
+		edate = edate + " @ 23:59:00";
+
 		query.setParameter("sdate", sdate);
 		query.setParameter("edate", edate);
 		return query.getResultList();

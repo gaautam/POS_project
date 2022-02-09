@@ -46,7 +46,7 @@ function writeFileData(arr){
     }
     var tempLink = document.createElement('a');
     tempLink.href = fileUrl;
-    tempLink.setAttribute('download', 'download.tsv');
+    tempLink.setAttribute('download', 'errors.tsv');
     tempLink.click(); 
 }
 

@@ -27,7 +27,7 @@ function validate(){
 
 	let z = document.forms["add-order-form"]["selling_price"].value;
 	if (z == "") {
-		sweetAlert("Missing Parameter", "Quantity must be filled out", "warning");
+		sweetAlert("Missing Parameter", "Selling Price must be filled out", "warning");
 		return false;
 	}
 	else if (z < 0) {
@@ -72,6 +72,7 @@ function validateUpdate(){
 }
 
 
+
 //function to check valid barcode and quantity
 function checkOrder(data,barcode,quantity){
 	for(var i in data){
@@ -86,38 +87,62 @@ function checkOrder(data,barcode,quantity){
 					}
 		}
 	} 
+	sweetAlert("Input Error", "Brand and category does not exist", "warning");
 	return false
 }
 
-// var flag=0;
+function checkOrder2(data,barcode,quantity,oldbarcode,row_barcode){
+	var barcodearray = []
+	for (var m = 0; m < row_barcode.length; m++) { 
+		var bf = row_barcode[m]; 
+		barcodearray.push(bf.innerHTML);
+		} 
+	for(var i in data){
+		var e = data[i];
+		if(barcode!=oldbarcode && barcodearray.includes(barcode)){
+			sweetAlert("Input Error", "Barcode already exists in the given order. Please edit it if required.", "warning")
+			return false;
+		}
+		if (barcode==e.barcode){
+					if(quantity<=e.quantity){
+							return true
+					}
+					else{
+						sweetAlert("Inventory Underflow", "Quantity exceeds amount in inventory", "warning");
+						return false
+					}
+		}
+	} 
+	sweetAlert("Input Error", "Brand and category does not exist", "warning");
+	return false
+}
 
-// function checkOrderID(data,barcode,quantity,id){
-// 	flag=0;
-// 	var baseUrl = $("meta[name=baseUrl]").attr("content")
-// 	var url = baseUrl +"/api/order_item_by_order_id/" + id;
-// 	$.ajax({
-// 		url: url,
-// 		type: 'GET',
-// 		async:false,
-// 		success: function(data1) {
-// 				for(var i in data1){
-// 					var e = data1[i]
-// 					if(e.barcode==barcode && e.orderId==id){
-// 						flag=1;
-// 						alert("The barcode already exists in this order! Edit it if required.")
-// 					}
-// 					else if(e.barcode==barcode && e.quantity<quantity){
-// 						flag=1;
-// 						alert("The quantity exceed amount in inventory")
-// 					}
-// 				}
-// 		},
-// 		error: function(){
-// 				sweetAlert("Invoice Printing error", "An error has occurred in getting order items invoice", "error");
-// 		}
-// 	 });
-// 	return false
-// }
+function checkOrder3(data,barcode,quantity){
+	var row_barcode = document.getElementsByName('barcode[]');
+	var barcodearray = []
+	for (var m = 0; m < row_barcode.length; m++) { 
+		var bf = row_barcode[m]; 
+		barcodearray.push(bf.innerHTML);
+		} 
+	for(var i in data){
+		var e = data[i];
+		if(barcodearray.includes(barcode)){
+			sweetAlert("Input Error", "Barcode already exists in the given order. Please edit it if required.", "warning")
+			return false;
+		}
+		if (barcode==e.barcode){
+					if(quantity<=e.quantity){
+							return true
+					}
+					else{
+						sweetAlert("Inventory Underflow", "Quantity exceeds amount in inventory", "warning");
+						return false
+					}
+		}
+	} 
+	sweetAlert("Input Error", "Brand and category does not exist", "warning");
+	return false
+}
 
 function deleteOrderItem(id,barcode,quantity){
 	var url2 = getOrderUrl() + "item/" + id + "/" + barcode
@@ -241,6 +266,7 @@ function updateOrderItem(){
 	var selling_price = $("#order-edit-form input[name=selling_price]").val();
 	var baseUrl = $("meta[name=baseUrl]").attr("content");
 	url2 = baseUrl + "/api/inventory";
+	var flag = true;
 
 	$('#edit-order-modal').modal('toggle');
 	$('#edit-order-item-modal').modal('toggle');
@@ -250,6 +276,7 @@ function updateOrderItem(){
 		$.ajax({
 			url: url2,
 			type: 'GET',
+			async:false,
 			success: function(data) {	
 					if(checkOrder(data,barcode,updated_quantity)){
 					reduceInventory(barcode,updated_quantity,data);
@@ -264,11 +291,15 @@ function updateOrderItem(){
 		$.ajax({
 			url: url2,
 			type: 'GET',
+			async:false,
 			success: function(data) {	
-					if(checkOrder(data,barcode,quantity)){
+				var row_barcode = document.getElementsByName('barcode[]'); 
+					flag=checkOrder2(data,barcode,quantity,oldbarcode,row_barcode);
+					if(flag===true){
 					reduceInventory(barcode,quantity,data);
 					increaseInventory(oldbarcode,oldquantity,data);
 					}
+
 			},
 			error: function(){
 				sweetAlert("Data loading error", "An error has occurred in getting the order list", "error");
@@ -278,6 +309,10 @@ function updateOrderItem(){
 	
 	var url = getOrderUrl() +"item"+ "/" + order_item_id + "/";
 	$form={"barcode":barcode,"order_id":id,"quantity":quantity,"selling_price":selling_price}
+
+	console.log("flag in put is "+flag);
+
+	if(flag===true){
 
 	fetch(url, {
 		method: 'PUT',
@@ -293,6 +328,7 @@ function updateOrderItem(){
 	  .catch((error) => {
 		console.error('Error:', error);
 	  });
+	}
 }
 
 function AddItem(event){
@@ -314,8 +350,9 @@ function AddItemToDB(event){
 	$.ajax({
 		url: url,
 		type: 'GET',
+		async:false,
 		success: function(data) {	
-				if(checkOrder(data,barcode,quantity)){
+				if(checkOrder3(data,barcode,quantity)){
 					reduceInventory(barcode,quantity,data);
 					var x =[{"barcode":barcode,"order_id":id,"quantity":quantity,"selling_price":selling_price}]
 					var object2_orderitems = JSON.stringify(x)
@@ -340,6 +377,9 @@ function AddItemToDB(event){
 							sweetAlert("Data loading error", "An error has occurred in getting the order list", "error");
 						}
 					});
+					$("#add-order-form input[name=barcode]").val("");
+	$("#add-order-form input[name=quantity]").val("");
+	$("#add-order-form input[name=selling_price]").val("");
 	
 }
 
@@ -460,8 +500,8 @@ function addSubmitOrder(event){
 			var quantity = document.getElementsByName('quantity[]'); 
 			var selling_price = document.getElementsByName('selling_price[]');
 			var currentdate = new Date(); 
-			var datetime =  currentdate.getDate() + "/"
-							+ (currentdate.getMonth()+1)  + "/" 
+			var datetime =  String(currentdate.getDate()).padStart(2, '0') + "-"
+							+ String((currentdate.getMonth()+1)).padStart(2, '0')  + "-" 
 							+ currentdate.getFullYear() + " @ "  
 							+ currentdate.getHours() + ":"  
 							+ currentdate.getMinutes() + ":" 
@@ -537,6 +577,9 @@ function addSubmitOrder(event){
 				console.error('Error:', error);
 			});
 		}
+	else if(cond==false){
+		sweetAlert("Input Data Error","Enter Order Items before submitting","warning")
+	}
 
 
 	$("#modal-Form").css("display", "none");

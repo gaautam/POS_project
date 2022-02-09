@@ -37,8 +37,30 @@ function validate(){
 	addBrand()
 }
 
+function validateUpdate(){
+	let x = document.forms["brand-edit-form"]["brand"].value;
+	if (x == "") {
+		sweetAlert("Missing parameter", "Brand must be filled out", "warning");
+		return false;
+	}
+	else if(x.length>255){
+		sweetAlert("Constraint Exception", "Length of brand exceeded permitted length", "warning");
+	}
+
+	let y = document.forms["brand-edit-form"]["category"].value;
+	if (y == "") {
+		sweetAlert("Missing parameter", "Category must be filled out", "warning");
+		return false;
+	}
+	else if(y.length>255){
+		sweetAlert("Constraint Exception", "Length of category exceeded permitted length", "warning");
+	}
+
+	updateBrand()
+}
+
 //BUTTON ACTIONS
-function addBrand(){
+async function addBrand(){
 	// Set the values to update
 	//$('#brand-form').validate().form()
 	var brand=$("#brand-form input[name=brand").val();
@@ -49,7 +71,6 @@ function addBrand(){
 
 	var baseUrl = $("meta[name=baseUrl]").attr("content")
 	var url2 = baseUrl + "/api/brand";
-
 	// check brand and category combo is unique or not
 	$.ajax({
 		url: url2,
@@ -72,9 +93,9 @@ function addBrand(){
 				  });
 			}
 			else
-			{
-				alert("Brand and Category combination already Exists. Please try again");
-				//sweetAlert("Unique constraints exception", "Brand and Category combination already Exists. Please try again", "error");
+			{	
+				// alert("Brand and Category combination already Exists. Please try again");
+				sweetAlert("Unique constraints exception", "Brand and Category combination already Exists. Please try again", "error");
 				
 			}
 		},
@@ -211,11 +232,16 @@ function readFileDataCallback(results){
 		sweetAlert("Rows Exceeded","Number of rows in the file Exceeded 5000","warning")
 		return false;
 	}
+	else if(fileData.length==0){
+		sweetAlert("Input Data Error","The uploaded file seems to be empty or wrong with respect to the template provided. Please download the sample template and try again !!","warning")
+		return false;
+	}
 	checkFile(fileData)
 	if(errorBrandData.length==0){
 		for(var i in fileData){
 			uploadRows(fileData[i]);
 		}
+		sweetAlert("Upload Successful","The contents of the file has been uploaded successfully","success")
 	}
 	else{
 		$('#file-error-brand-modal').modal('toggle');
@@ -372,7 +398,7 @@ function displayBrand(data){
 function init(){
 	console.log("Initialising")
 	$('#add-brand').click(validate);
-	$('#update-brand').click(updateBrand);
+	$('#update-brand').click(validateUpdate);
 	$('#refresh-brand-data').click(getBrandList);
 	$('#process-brand-file').click(processData);
 	$('#download-brand-errors').click(downloadErrors);

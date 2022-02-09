@@ -34,8 +34,8 @@ function checkBrandCategory(data,brand,category,barcode){
 			for(var i in data1){
 				var e = data1[i];
 				if (barcode==e.barcode.toLowerCase().trim()){
-					alert("The barcode entered already exists in Inventory. Edit it if required.");
-					//sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
+					//alert("The barcode entered already exists in Inventory. Edit it if required.");
+					sweetAlert("Input Data Error","The barcode entered already exists in Inventory. Edit it if required.","warning")
 					return false;
 					
 					
@@ -160,8 +160,8 @@ function validate(){
 		sweetAlert("Missing Parameter", "MRP must be filled out", "warning");
 		return false;
 	}
-	else if (a < 0) {
-		sweetAlert("Constraint Exception", "MRP cannot be negative", "warning");
+	else if (a <= 0) {
+		sweetAlert("Constraint Exception", "MRP cannot be Negative or Zero", "warning");
 		return false;
 	}
 
@@ -204,8 +204,8 @@ function validateUpdate(){
 		sweetAlert("Missing Parameter", "MRP must be filled out", "warning");
 		return false;
 	}
-	else if (a < 0) {
-		sweetAlert("Constraint Exception", "MRP cannot be negative", "warning");
+	else if (a <= 0) {
+		sweetAlert("Constraint Exception", "MRP cannot be Negative or Zero", "warning");
 		return false;
 	}
 
@@ -249,8 +249,8 @@ function addProduct(event){
 						}
 						else
 						{
-							alert("The entered Brand and Category combination does not exist in the database, please try again !");
-						//sweetAlert("Input Data Error", "The entered Brand and Category combination does not exist in the database, please try again !", "error");
+							//alert("The entered Brand and Category combination does not exist in the database, please try again !");
+						sweetAlert("Input Data Error", "The entered Brand and Category combination does not exist in the database, please try again !", "error");
 						}
 					},
 					error: function(){
@@ -384,11 +384,16 @@ function readFileDataCallback(results){
 		sweetAlert("Rows Exceeded","Number of rows in the file Exceeded 5000","warning")
 		return false;
 	}
+	else if(fileData.length==0){
+		sweetAlert("Input Data Error","The uploaded file seems to be empty or not with respect to the template provided. Please download the sample template and try again !!","warning")
+		return false;
+	}
 	checkFile(fileData)
 	if(errorProductData.length==0){
 		for(var i in fileData){
 			uploadRows(fileData[i]);
 		}
+		sweetAlert("Upload Successful","The contents of the file has been uploaded successfully","success")
 	}
 	else{
 		$('#file-error-product-modal').modal('toggle');

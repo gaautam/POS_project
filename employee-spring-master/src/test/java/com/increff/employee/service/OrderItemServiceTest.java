@@ -21,7 +21,7 @@ public class OrderItemServiceTest extends AbstractUnitTest {
 	@Test
 	public void testAdd() throws ApiException {
 		OrderItemsPojo p = new OrderItemsPojo();
-		p.setBarcode("123");
+		p.setBarcode("1234567");
 		p.setOrderId(5);
 		p.setQuantity(100);
 		p.setSelling_price(200);

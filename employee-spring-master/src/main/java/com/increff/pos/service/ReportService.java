@@ -185,7 +185,7 @@ public class ReportService {
 	      for(ReportForm bd : list) {
 	    	if(bd.getBrand().equals(brand) && bd.getCategory().equals(category)) {
 	         final_quantity = final_quantity+bd.getQuantity();
-	         total_revenue = total_revenue+bd.getSelling_price();
+	         total_revenue = total_revenue+ (bd.getSelling_price()*bd.getQuantity());
 	    	}
 	      }
 	      table.addCell(brand);
@@ -324,7 +324,7 @@ public class ReportService {
 	      for(OrderItemData bd : list) {
 	    	  table.addCell(bd.getBarcode());
 		      table.addCell(String.valueOf(bd.getQuantity()));
-		      table.addCell(String.valueOf(bd.getSelling_price()));
+		      table.addCell(String.valueOf(bd.getSelling_price()*bd.getQuantity()));
 	    	}
 	      doc.open();
 	      // adding table to document
@@ -336,7 +336,7 @@ public class ReportService {
 	      doc.add(timestamp);
 	      doc.close();
 	      writer.close();
-	      System.out.println("Order report created successfully");
+	      System.out.println("Consolidated order report created successfully");
 	    } catch (DocumentException | FileNotFoundException e) {
 	      // TODO Auto-generated catch block
 	      e.printStackTrace();

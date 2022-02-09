@@ -75,13 +75,13 @@ function withoutBrandCategory(sdate,edate){
 	   url: url,
 	   type: 'GET',
 	   success: function(data) {
-	   		console.log("Order report data fetched");
+	   		console.log("Consolidated Order report data fetched");
 	   		console.log(data);  
                $.ajax({
                 url: getReportUrl() + "/api/order/report/consolidated_orderurl",
                 type: 'GET',
                 success: function(download) {
-                        console.log("Order report url fetched");
+                        console.log("Consolidated Order report url fetched");
                         console.log(download);
                         window.open(download,'_blank');
                 },
