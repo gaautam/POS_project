@@ -258,8 +258,11 @@ function checkFile(fileData){
 				type: 'GET',
 				async: false,
 				success: function(data) {	
-					console.log(errorBrandData);
-					if(typeof row.brand === 'undefined' || typeof row.category === 'undefined' || row.brand==="" || row.category===""){
+					if((Object.values(row).length)> +2){
+						row.Error_Message = "The row is wrong with respect to the template given.Please download the sample template and try again!!";
+						errorBrandData.push(row);
+					}
+					else if(typeof row.brand === 'undefined' || typeof row.category === 'undefined' || row.brand==="" || row.category===""){
 						row.Error_Message = "Brand or Category value missing in the file"
 						errorBrandData.push(row)
 					}
@@ -360,6 +363,9 @@ function createTable(){
 		bDestroy: true,
 		pageLength : 5,
 		lengthMenu: [[5, 10, 20], [5, 10, 20]],
+		columnDefs: [
+			{"className": "dt-center", "targets": "_all"}
+		  ],
 	});
 	
 }

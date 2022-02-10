@@ -341,7 +341,11 @@ function checkFile(fileData){
 				type: 'GET',
 				async: false,
 				success: function(data) {	
-					if(typeof row.barcode === 'undefined' || typeof row.quantity === 'undefined' || row.barcode==="" || row.quantity==""){
+					if((Object.values(row).length)> +2){
+						row.Error_Message = "The row is wrong with respect to the template given.Please download the sample template and try again!!";
+						errorInventoryData.push(row);
+					}
+					else if(typeof row.barcode === 'undefined' || typeof row.quantity === 'undefined' || row.barcode==="" || row.quantity==""){
 						row.Error_Message = "Barcode or Quantity value missing in the file"
 						errorInventoryData.push(row)
 					}
@@ -442,7 +446,10 @@ function createTable(){
 		info:false,
 		bDestroy: true,
 		pageLength : 5,
-		lengthMenu: [[5, 10, 20], [5, 10, 20]]
+		lengthMenu: [[5, 10, 20], [5, 10, 20]],
+		columnDefs: [
+			{"className": "dt-center", "targets": "_all"}
+		  ],
 	});
 	
 }

@@ -385,7 +385,7 @@ function readFileDataCallback(results){
 		return false;
 	}
 	else if(fileData.length==0){
-		sweetAlert("Input Data Error","The uploaded file seems to be empty or not with respect to the template provided. Please download the sample template and try again !!","warning")
+		sweetAlert("Input Data Error","The uploaded file seems to be empty or wrong with respect to the template provided. Please download the sample template and try again !!","warning")
 		return false;
 	}
 	checkFile(fileData)
@@ -410,12 +410,16 @@ function checkFile(fileData){
 				type: 'GET',
 				async: false,
 				success: function(data) {	
-					if(typeof row.barcode === 'undefined' || typeof row.brand === 'undefined' || typeof row.category === 'undefined' || typeof row.name === 'undefined' || typeof row.mrp === 'undefined' || row.barcode==="" || row.brand==="" ||row.category==="" || row.name==="" || row.mrp==""){
+					if((Object.values(row).length)> +5){
+						row.Error_Message = "The row is wrong with respect to the template given.Please download the sample template and try again!!";
+						errorProductData.push(row);
+					}
+					else if(typeof row.barcode === 'undefined' || typeof row.brand === 'undefined' || typeof row.category === 'undefined' || typeof row.name === 'undefined' || typeof row.mrp === 'undefined' || row.barcode==="" || row.brand==="" ||row.category==="" || row.name==="" || row.mrp==""){
 						row.Error_Message = "Value missing in the file row"
 						errorProductData.push(row)
 					}
-					else if(+row.mrp < +0){
-						row.Error_Message = "MRP value cannot be negative"
+					else if(+row.mrp <= +0){
+						row.Error_Message = "MRP value cannot be Negative or Zero"
 						errorProductData.push(row)
 					}
 					else if(checkFileBrandCategory(data,row.brand,row.category,row.barcode)){
@@ -512,7 +516,33 @@ function createTable(){
 		info:false,
 		bDestroy: true,
 		pageLength : 5,
-		lengthMenu: [[5, 10, 20], [5, 10, 20]]
+		lengthMenu: [[5, 10, 20], [5, 10, 20]],
+		columnDefs: [
+			{
+				"targets": 0, 
+				"className": "text-center"
+		   },
+		   {
+			"targets": 1, 
+			"className": "text-center"
+	   },
+	   {
+			"targets": 2, 
+			"className": "text-center"
+   		},
+   		{
+			"targets": 3, 
+			"className": "text-center"
+		},
+		   {
+				"targets": 4,
+				"className": "text-left",
+		   },
+		   {
+			"targets": 5, 
+			"className": "text-center"
+	   		},
+		  ],
 	});
 	
 }

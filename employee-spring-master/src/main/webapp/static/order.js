@@ -78,7 +78,10 @@ function checkOrder(data,barcode,quantity){
 	for(var i in data){
 		var e = data[i];
 		if (barcode==e.barcode){
-					if(quantity<=e.quantity){
+					if(quantity<=e.quantity){	
+						console.log("e.barcode is" + e.barcode)
+							console.log("quantity is" + quantity)
+							console.log("e.quantity is" + e.quantity)
 							return true
 					}
 					else{
@@ -277,8 +280,9 @@ function updateOrderItem(){
 			url: url2,
 			type: 'GET',
 			async:false,
-			success: function(data) {	
-					if(checkOrder(data,barcode,updated_quantity)){
+			success: function(data) {
+					flag=checkOrder(data,barcode,updated_quantity)
+					if(flag==true){
 					reduceInventory(barcode,updated_quantity,data);
 					}
 			},
@@ -632,7 +636,10 @@ function createTable(){
 		info:false,
 		bDestroy: true,
 		pageLength : 5,
-		lengthMenu: [[5, 10, 20], [5, 10, 20]]
+		lengthMenu: [[5, 10, 20], [5, 10, 20]],
+		columnDefs: [
+			{"className": "dt-center", "targets": "_all"}
+		  ],
 	});
 	
 }

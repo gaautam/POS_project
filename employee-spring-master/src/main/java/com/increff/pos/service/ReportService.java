@@ -213,7 +213,7 @@ public class ReportService {
 			
 		 double total_price = 0;
 		 for(OrderItemData l:list) {
-			 total_price= total_price+l.getSelling_price();
+			 total_price= total_price+(l.getSelling_price()*l.getQuantity());
 		 }
 		 
 		 new ReportService().createTableOrderItems("E:\\Increff Tutorials\\pos-spring-master\\employee-spring-master\\src\\main\\webapp\\resources\\Order_Invoice.pdf",list,order,total_price);

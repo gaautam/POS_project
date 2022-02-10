@@ -28,6 +28,10 @@ function orderReport(){
 		sweetAlert("Missing parameter", "Ending date must be filled out", "warning");
 		return false;
 	}
+        else if(edate<sdate){
+                sweetAlert("Wrong parameter", "Ending date must be a date after the starting date!", "warning");
+		return false;
+        }
         if(brand=="undefined-undefined-" && category=="undefined-undefined-"){
                 withoutBrandCategory(sdate,edate)
         }
