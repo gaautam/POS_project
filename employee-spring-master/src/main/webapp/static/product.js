@@ -495,8 +495,9 @@ function displayProductList(data){
 	$tbody.empty();
 	for(var i in data){
 		var e = data[i];
-		var buttonHtml = '<button class="btn btn-primary btn-md" onclick="deleteProduct(' + e.id + ')">DELETE</button>'
-		buttonHtml += ' <button class="btn btn-primary btn-md btn-open" onclick="displayEditProduct(' + e.id + ')">EDIT</button>'
+		// var buttonHtml = '<button class="btn btn-primary btn-md" onclick="deleteProduct(' + e.id + ')">DELETE</button>'
+		// buttonHtml += ' <button class="btn btn-primary btn-md btn-open" onclick="displayEditProduct(' + e.id + ')">EDIT</button>'
+		var buttonHtml = ' <button class="btn btn-primary btn-sm btn-open" onclick="displayEditProduct(' + e.id + ')"><i class="fas fa-pen"></i></button>'
 		var row = '<tr>'
 		+ '<td>' + e.barcode + '</td>'
 		+ '<td>' + e.brand + '</td>'

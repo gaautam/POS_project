@@ -125,7 +125,7 @@ main{
 }
 
 .nav-item:hover{
-    font-size: 150%;
+    background-color: rgba(216, 216, 216, 0.829);
+    cursor: pointer; transition: all .5s ease-in-out;
+    font-size: large;
 }
-
-

@@ -30,12 +30,12 @@
               <hr>
   
               <!-- Modal for brand -->
-              <button type="button" class="btn btn-primary btn-md btn-open" data-toggle="modal" data-target="#modalForm">ADD</button>
-              <button type="button" class="btn btn-primary btn-md" id="refresh-product-data" >REFRESH</button>
+              <button type="button" class="btn btn-primary btn-md btn-open" data-toggle="modal" data-target="#modalForm">Add</button>
+              <button type="button" class="btn btn-primary btn-md" id="refresh-product-data" >Refresh</button>
 
         
               <input type="file" class="btn btn-md" id="process-product-data" >
-              <button type="button" class="btn btn-primary btn-sm" id="process-product-file" >CONFIRM FILE UPLOAD</button><br>
+              <button type="button" class="btn btn-primary btn-sm" id="process-product-file" >File Upload</button><br>
 
 
               <a class="download-sample" th:href="@{/resources/product.tsv}">Click here to download sample .tsv file</a>
@@ -46,7 +46,7 @@
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h4 class="modal-title">Fill the application</h4>
+                          <h4 class="modal-title">Enter the details</h4>
                           <button class="close" type="button" data-dismiss="modal">&times;</button>
                         </div>
                           <div class="modal-body">
@@ -73,8 +73,8 @@
                                   <input type="number" min="0" name="mrp" class="form-control">
                                 </div>
                                 <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
-                                  <button class="btn btn-info btn-md btn-submit" type="button" id="add-product">ADD</button>
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  <button class="btn btn-info btn-md btn-submit" type="button" id="add-product">Add</button>
                                 </div>
                               </form>
                             </div>

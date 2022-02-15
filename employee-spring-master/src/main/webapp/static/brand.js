@@ -345,8 +345,9 @@ function displayBrandList(data){
 	//$("#brand-table  tbody").remove();
 	for(var i in data){
 		var e = data[i];
-		var buttonHtml = '<button class="btn btn-primary btn-md" onclick="deleteBrand(' + e.id + ')">DELETE</button>'
-		buttonHtml += ' <button class="btn btn-primary btn-md btn-open" onclick="displayEditBrand(' + e.id + ')">EDIT</button>'
+		// var buttonHtml = '<button class="btn btn-primary btn-md" onclick="deleteBrand(' + e.id + ')">DELETE</button>'
+		// buttonHtml += ' <button class="btn btn-primary btn-md btn-open" onclick="displayEditBrand(' + e.id + ')">EDIT</button>'
+		var buttonHtml = '<button class="btn btn-primary btn-sm btn-open" onclick="displayEditBrand(' + e.id + ')"><i class="fas fa-pen"></i></button>'
 		var row = '<tr>'
 		+ '<td>' + e.brand + '</td>'
 		+ '<td>' + e.category + '</td>'

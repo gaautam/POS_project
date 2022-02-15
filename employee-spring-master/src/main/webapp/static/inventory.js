@@ -114,8 +114,8 @@ function validate(){
 		sweetAlert("Missing Parameter", "Quantity must be filled out", "warning");
 		return false;
 	}
-	else if (y <= 0) {
-		sweetAlert("Constraint Exception", "Quantity must be greater than or equal to 1 unit", "warning");
+	else if (y < 0) {
+		sweetAlert("Constraint Exception", "Quantity cannot be negative", "warning");
 		return false;
 	}
 
@@ -137,8 +137,8 @@ function UpdateValidate(){
 		sweetAlert("Missing Parameter", "Quantity must be filled out", "warning");
 		return false;
 	}
-	else if (y <= 0) {
-		sweetAlert("Constraint Exception", "Quantity must be greater than or equal to 1 unit", "warning");
+	else if (y < 0) {
+		sweetAlert("Constraint Exception", "Quantity cannot be negative", "warning");
 		return false;
 	}
 
@@ -349,8 +349,8 @@ function checkFile(fileData){
 						row.Error_Message = "Barcode or Quantity value missing in the file"
 						errorInventoryData.push(row)
 					}
-					else if(+row.quantity <= +0){
-						row.Error_Message = "Quantity value cannot be zero or negative"
+					else if(+row.quantity < +0){
+						row.Error_Message = "Quantity value cannot be negative"
 						errorInventoryData.push(row);
 					}
 					else if(checkFileBarcode(data,row.barcode)){
@@ -429,8 +429,9 @@ function displayInventoryList(data){
 	$tbody.empty();
 	for(var i in data){
 		var e = data[i];
-		var buttonHtml = '<button class="btn btn-primary btn-md" onclick="deleteInventory(' + e.id + ')">DELETE</button>'
-		buttonHtml += ' <button class="btn btn-primary btn-md btn-open" onclick="displayEditInventory(' + e.id + ')">EDIT</button>'
+		// var buttonHtml = '<button class="btn btn-primary btn-md" onclick="deleteInventory(' + e.id + ')">DELETE</button>'
+		// buttonHtml += ' <button class="btn btn-primary btn-md btn-open" onclick="displayEditInventory(' + e.id + ')">EDIT</button>'
+		var buttonHtml = ' <button class="btn btn-primary btn-sm btn-open" onclick="displayEditInventory(' + e.id + ')"><i class="fas fa-pen"></i></button>'
 		var row = '<tr>'
 		+ '<td>' + e.barcode + '</td>'
 		+ '<td>' + e.quantity + '</td>'

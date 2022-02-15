@@ -140,12 +140,12 @@ public class ReportService {
 	    }
 	  }
 	
-	public void OrderReport(List<ReportForm> list,String brand,String category) {
+	public void OrderReport(List<ReportForm> list,String brand,String category,String sdate,String edate) {
 		
-		 new ReportService().createTableOrder("E:\\Increff Tutorials\\pos-spring-master\\employee-spring-master\\src\\main\\webapp\\resources\\Order_Report.pdf",list,brand,category);
+		 new ReportService().createTableOrder("E:\\Increff Tutorials\\pos-spring-master\\employee-spring-master\\src\\main\\webapp\\resources\\Order_Report.pdf",list,brand,category,sdate,edate);
 	}
 	
-	private void createTableOrder(String PDFPath, List<ReportForm> list,String brand,String category){
+	private void createTableOrder(String PDFPath, List<ReportForm> list,String brand,String category,String sdate,String edate){
 	    try {
 	      File f= new File(PDFPath); 
 		  f.delete();
@@ -173,7 +173,7 @@ public class ReportService {
 	      double total_revenue = 0;
 	      Paragraph p = new Paragraph(" ",font);
 	      p.setAlignment(Paragraph.ALIGN_CENTER);
-	      Paragraph title = new Paragraph("Consolidated Sales Report",font);
+	      Paragraph title = new Paragraph("Consolidated Sales Report between "+sdate+" and "+edate,font);
 	      title.setAlignment(Paragraph.ALIGN_CENTER);
 	      Paragraph creation = new Paragraph("Report generated on:",font);
 	      creation.setAlignment(Paragraph.ALIGN_BOTTOM);
@@ -278,31 +278,33 @@ public class ReportService {
 	      doc.add(timestamp);
 	      doc.close();
 	      writer.close();
-	      System.out.println("Order items report created successfully");
+	      System.out.println("Order items invoice generated successfully");
 	    } catch (DocumentException | FileNotFoundException e) {
 	      // TODO Auto-generated catch block
 	      e.printStackTrace();
 	    }
 	  }
 
-	public void AllOrderReport(List<OrderItemData> list) {
-		new ReportService().createTableConsolidatedOrder("E:\\Increff Tutorials\\pos-spring-master\\employee-spring-master\\src\\main\\webapp\\resources\\Consolidated_Order_Report.pdf",list);
+	public void AllOrderReport(List<ReportForm> list,String sdate,String edate) {
+		new ReportService().createTableConsolidatedOrder("E:\\Increff Tutorials\\pos-spring-master\\employee-spring-master\\src\\main\\webapp\\resources\\Consolidated_Order_Report.pdf",list,sdate,edate);
 		
 	}
-	private void createTableConsolidatedOrder(String PDFPath, List<OrderItemData> list){
+	private void createTableConsolidatedOrder(String PDFPath, List<ReportForm> list,String sdate,String edate){
 	    try {
 	      File f= new File(PDFPath); 
 		  f.delete();
 	      Font font = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
 	      Document doc = new Document();
 	      PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(PDFPath));
-	      PdfPTable table = new PdfPTable(3);
+	      PdfPTable table = new PdfPTable(4);
 	      table.setWidthPercentage(100);
 	      // setting column widths
-	      table.setWidths(new float[] {8.0f, 8.0f, 8.0f});
+	      table.setWidths(new float[] {6.0f, 6.0f, 6.0f,6.0f});
 	      PdfPCell cell = new PdfPCell();
 	      // table headers
-	      cell.setPhrase(new Phrase("Barcode", font));
+	      cell.setPhrase(new Phrase("Brand", font));
+	      table.addCell(cell);
+	      cell.setPhrase(new Phrase("Category", font));
 	      table.addCell(cell);
 	      cell.setPhrase(new Phrase("Quantity", font));
 	      table.addCell(cell);
@@ -312,7 +314,7 @@ public class ReportService {
 	      // adding table rows
 	      Paragraph p = new Paragraph(" ",font);
 	      p.setAlignment(Paragraph.ALIGN_CENTER);
-	      Paragraph title = new Paragraph("Consolidated Sales Report",font);
+	      Paragraph title = new Paragraph("Consolidated Sales Report between "+sdate+" and "+edate,font);
 	      title.setAlignment(Paragraph.ALIGN_CENTER);
 	      Paragraph creation = new Paragraph("Report generated on:",font);
 	      creation.setAlignment(Paragraph.ALIGN_BOTTOM);
@@ -321,10 +323,30 @@ public class ReportService {
 	      LocalDateTime now = LocalDateTime.now();
 	      Paragraph timestamp = new Paragraph(dtf.format(now),font);
 	      timestamp.setAlignment(Paragraph.ALIGN_BOTTOM);
-	      for(OrderItemData bd : list) {
-	    	  table.addCell(bd.getBarcode());
+	      
+	      int final_quantity=0;
+	      double final_price=0;
+	      
+	      for(int i=0;i<list.size();i++) {
+	    	 final_price = 0;
+	    	 if(list.get(i).getBrand().equals(list.get(i+1).getBrand()) && list.get(i).getCategory().equals(list.get(i+1).getCategory())) {
+	    		final_quantity = list.get(i).getQuantity() + list.get(i+1).getQuantity();
+	    		final_price = list.get(i).getSelling_price()*list.get(i).getQuantity()  + list.get(i+1).getSelling_price()*list.get(i+1).getQuantity();
+	    		list.get(i).setSelling_price(final_price);
+	    		list.get(i).setQuantity(final_quantity);
+	    		list.remove(i+1);
+	    	 }
+	    	 else {
+	    		 final_price = list.get(i).getSelling_price()*list.get(i).getQuantity();
+		    		list.get(i).setSelling_price(final_price);
+	    	 }
+	      }
+	      
+	      for(ReportForm bd : list) {
+	    	  table.addCell(bd.getBrand());
+	    	  table.addCell(bd.getCategory());
 		      table.addCell(String.valueOf(bd.getQuantity()));
-		      table.addCell(String.valueOf(bd.getSelling_price()*bd.getQuantity()));
+		      table.addCell(String.valueOf(bd.getSelling_price()));
 	    	}
 	      doc.open();
 	      // adding table to document

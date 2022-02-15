@@ -71,10 +71,11 @@ function validateUpdate(){
 	updateOrderItem()
 }
 
-
+var inventory_flag=0;
 
 //function to check valid barcode and quantity
 function checkOrder(data,barcode,quantity){
+	inventory_flag=0;
 	for(var i in data){
 		var e = data[i];
 		if (barcode==e.barcode){
@@ -85,7 +86,7 @@ function checkOrder(data,barcode,quantity){
 							return true
 					}
 					else{
-						sweetAlert("Inventory Underflow", "Quantity exceeds amount in inventory", "warning");
+						inventory_flag=1;
 						return false
 					}
 		}
@@ -227,8 +228,8 @@ function editModal(data,id){
 		var barcode = e.barcode;
 		var quantity = e.quantity;
 		var selling_price = e.selling_price;
-		var buttonHtml = '<button class="btn btn-primary btn-sm btn-open" onclick="deleteOrderItem(\'' + id  +'\',\'' + barcode + '\',\'' + quantity + '\');deleteRow(this);">DELETE</button>'
-		buttonHtml += ' <button class="btn btn-primary btn-sm btn-open" onclick="displayEditOrderItem(\'' + id  +'\',\'' + barcode + '\',\'' + quantity + '\',\'' + selling_price + '\')">EDIT</button>'
+		var buttonHtml = '<button class="btn btn-primary btn-sm btn-open" onclick="deleteOrderItem(\'' + id  +'\',\'' + barcode + '\',\'' + quantity + '\');deleteRow(this);"><i class="far fa-trash-alt"></i></button>'
+		buttonHtml += ' <button class="btn btn-primary btn-sm btn-open" onclick="displayEditOrderItem(\'' + id  +'\',\'' + barcode + '\',\'' + quantity + '\',\'' + selling_price + '\')"><i class="fas fa-pen"></i></button>'
 		$(".data-table-form2 tbody").append("<tr id='edit-item-row' order_id='"+id+"'  data-barcode='"+barcode+"' data-quantity='"+quantity+"' data-selling_price='"+selling_price+"' data-buttonHtml='"+buttonHtml+"'><td name='barcode[]'>"+barcode+"</td><td name='quantity[]'>"+quantity+"</td><td name='selling_price[]'>"+selling_price+"</td><td name='buttonHtml'>"+buttonHtml+"</td></tr>");
 		$("input[name='']").val("");
 		slno++;
@@ -423,7 +424,12 @@ $('form').submit(function(e){
 			}
 			else
 			{
+				if(inventory_flag==1){
+				sweetAlert("Inventory Underflow", "Quantity exceeds amount in inventory", "warning");
+				}
+				else{
 				sweetAlert("Input Data Error", "The entered Barcode does not exist in the database, please try again !", "error");
+				}
 			}
 		},
 		error: function(){
@@ -617,9 +623,9 @@ function displayOrderList(data){
 	$tbody.empty();
 	for(var i in data){
 		var e = data[i];
-		var buttonHtml = '<button type="button" class="btn btn-primary btn-md btn-open" data-toggle="modal" data-target="#row-open" onclick="itemDisplay(this)">VIEW</button>'
-		buttonHtml += ' <button type="button" class="btn btn-primary btn-md btn-open" data-toggle="modal" onclick="DisplayEditOrder(this)">EDIT</button>'
-		buttonHtml += ' <button type="button" class="btn btn-primary btn-md btn-open" onclick="invoiceGenerator(this)">GENERATE INVOICE</button>'
+		var buttonHtml = '<button type="button" class="btn btn-primary btn-md btn-open" data-toggle="modal" data-target="#row-open" onclick="itemDisplay(this)"><i class="fas fa-eye"></i></button>'
+		buttonHtml += ' <button type="button" class="btn btn-primary btn-md btn-open" data-toggle="modal" onclick="DisplayEditOrder(this)"><i class="fas fa-pen"></i></button>'
+		buttonHtml += ' <button type="button" class="btn btn-primary btn-md btn-open" onclick="invoiceGenerator(this)">Generate Invoice</button>'
 		
 		var row = '<tr>'
 		+ '<td>' + e.id + '</td>'

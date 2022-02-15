@@ -91,23 +91,24 @@ public class ReportController {
 				list2.add(convertedFromBarcode(p2,result));	
 			}
 		}
-		rservice.OrderReport(list2,brand,category);
+		rservice.OrderReport(list2,brand,category,sdate,edate);
 		return list2;
 	}
 	
 	@ApiOperation(value = "Generates a report of all Orders within a particular duration")
 	@RequestMapping(path = "/api/order/report/{sdate}/{edate}", method = RequestMethod.GET)
-	public List<OrderItemData> getAllOrderswithout(@PathVariable String sdate,@PathVariable String edate) throws ApiException {
+	public List<ReportForm> getAllOrderswithout(@PathVariable String sdate,@PathVariable String edate) throws ApiException {
 		List<OrderPojo> list = oservice.getDurationOrders(sdate,edate);
-		List<OrderItemData> list2 = new ArrayList<OrderItemData>();
+		List<ReportForm> list2 = new ArrayList<ReportForm>();
 		for (OrderPojo p : list) {
 			int id = p.getId();
 			List<OrderItemsPojo> l = oiservice.getOrderItems(id);
 			for (OrderItemsPojo p2 : l) {
-				list2.add(convertOrderItems(p2));	
+				ProductPojo result = pservice.getFromBarcode(p2.getBarcode());
+				list2.add(convertedFromBarcode(p2,result));	
 			}
 		}
-		rservice.AllOrderReport(list2);
+		rservice.AllOrderReport(list2,sdate,edate);
 		return list2;
 	}
 
